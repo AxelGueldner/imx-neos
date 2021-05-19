@@ -1,4 +1,4 @@
-prototype(imx.%%PROJECT%%:Presentation.%%TYPE%%.%%NAME%%) < prototype(Neos.Neos:ContentComponent) {
+prototype(imx.p%%roject%%:Presentation.T%%ype%%.N%%ame%%) < prototype(Neos.Neos:ContentComponent) {
 
   content = ${value}
   optionalClass = null
@@ -11,7 +11,7 @@ prototype(imx.%%PROJECT%%:Presentation.%%TYPE%%.%%NAME%%) < prototype(Neos.Neos:
   }
 
   @styleguide {
-      title = '%%TYPE%% / %%NAME%%'
+      title = 'T%%ype%% / N%%ame%%'
       description = 'Place description text for your component here'
       props {
 
@@ -19,8 +19,8 @@ prototype(imx.%%PROJECT%%:Presentation.%%TYPE%%.%%NAME%%) < prototype(Neos.Neos:
   }
 
   renderer = afx`
-    <div class={'testclass v-el testclass--' + props.type + (props.optionalClass && (' testclass--' + optionalClass))}>
-      Component %%TYPE%% / %%NAME%% is working
+    <div class={'n%%ame%% n%%ame%%--' + props.type + (props.optionalClass && (' n%%ame%%--' + optionalClass))}>
+      Component T%%ype%% / n%%ame%% is working
     </div>
   `
 }

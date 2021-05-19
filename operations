@@ -42,12 +42,12 @@ const copyComp = (project, source, target) => {
       project : project,
       type : validTypes[sourceType],
       name : sourceName,
-      basePath : getBasePath(validTypes[sourceType], sourceName)
+      basePath : getBasePath(project, validTypes[sourceType], sourceName)
     },{
       project : project,
       type : validTypes[targetType],
       name : targetName,
-      basePath : getBasePath(validTypes[targetType], targetName)
+      basePath : getBasePath(project, validTypes[targetType], targetName)
     });
   }
 };
@@ -59,14 +59,14 @@ const copyComp = (project, source, target) => {
  * @param name String name of the new component
  */
 const createCompFromTemplate = (project, type, name) => {
-  const basePath = getBasePath(type, name);
+  const basePath = getBasePath(project, type, name);
   
   ncp(__dirname + '/template', basePath, function (err) {
     if (err) {
       return console.error(err);
     }
     console.log('created new base component from template');
-    modifyTemplate(basePath, {project: project, type : type, name : name}, {project : '%%PROJECT%%', type : '%%TYPE%%', name : '%%NAME%%'});
+    modifyTemplate(basePath, {project: project, type : type, name : name}, {project : 'p%%roject%%', type : 't%%ype%%', name : 'n%%ame%%'});
   });
 };
 
@@ -98,20 +98,22 @@ const modifyTemplate = (basePath, target, source) => {
   target.name4css = target.name.replace('.', '-');
   source.name4css = source.name.replace('.', '-');
   
+  fs.renameSync(basePath + capitalize(source.name) + '.fusion', basePath + capitalize(target.name) + '.fusion');
+  
   replace({
-    files: [basePath + capitalize(source.name) + '.fusion', basePath + 'assets/styles/**/*.less'],
+    files: [basePath + capitalize(target.name) + '.fusion', basePath + 'assets/styles/**/*.less', basePath + 'assets/scripts/**/*.js'],
     from: [
-      new RegExp(source.name4css, 'g'),
-      new RegExp(capitalize(source.project), 'g'),
       new RegExp(capitalize(source.type), 'g'),
       new RegExp(capitalize(source.name), 'g'),
-      '%%YEAR%%'
+      new RegExp(source.name4css, 'g'),
+      new RegExp(source.project, 'g'),
+      'y%%ear%%'
     ],
     to: [
-      target.name4css,
-      capitalize(target.project),
       capitalize(target.type),
       capitalize(target.name),
+      target.name4css,
+      target.project,
       new Date().getFullYear()
     ]
   })
@@ -121,8 +123,6 @@ const modifyTemplate = (basePath, target, source) => {
     .catch(error => {
       console.error(error);
     });
-    
-  fs.renameSync(basePath + source.name + '.fusion', basePath + capitalize(target.name) + '.fusion');
 
 };
 

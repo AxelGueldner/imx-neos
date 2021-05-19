@@ -4,7 +4,7 @@
     "email": "gueldner@infomax-it.de"
   },
   "bin": {
-    "imx-atomic-cli": "imx-neos"
+    "imx-neos": "imx-neos"
   },
   "bugs": {
     "url": "https://github.com/AxelGueldner/imx-neos/issues"
