@@ -1,0 +1,33 @@
+{
+  "author": {
+    "name": "Axel Güldner",
+    "email": "gueldner@infomax-it.de"
+  },
+  "bin": {
+    "imx-atomic-cli": "imx-neos"
+  },
+  "bugs": {
+    "url": "https://github.com/AxelGueldner/imx-neos/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "commander": "^2.19.0",
+    "ncp": "^2.0.0",
+    "replace-in-file": "^3.4.3"
+  },
+  "deprecated": false,
+  "description": "Command Line Operations for imx neos",
+  "homepage": "https://github.com/AxelGueldner/imx-neos#readme",
+  "license": "ISC",
+  "main": "./lib/index.js",
+  "name": "imx-neos",
+  "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AxelGueldner/imx-neos.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.1"
+}

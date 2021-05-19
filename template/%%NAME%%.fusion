@@ -1,0 +1,26 @@
+prototype(imx.%%PROJECT%%:Presentation.%%TYPE%%.%%NAME%%) < prototype(Neos.Neos:ContentComponent) {
+
+  content = ${value}
+  optionalClass = null
+  
+  type = 'typeA'
+  imageIds = ${['1', '2']}
+
+  @propTypes {
+    type = ${PropTypes.oneOf('typeA', 'typeB')}
+  }
+
+  @styleguide {
+      title = '%%TYPE%% / %%NAME%%'
+      description = 'Place description text for your component here'
+      props {
+
+      }
+  }
+
+  renderer = afx`
+    <div class={'testclass v-el testclass--' + props.type + (props.optionalClass && (' testclass--' + optionalClass))}>
+      Component %%TYPE%% / %%NAME%% is working
+    </div>
+  `
+}

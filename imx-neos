@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+
+const {addComp, copyComp} = require('./operations');
+
+program
+  .version('0.0.1')
+	.description('Command Line Operations for imx neos integration');
+
+program
+	.command('addComp <project> <target>')
+	.alias('aC')
+	.description('creates a new component')
+	.action((project, target) => addComp(project, target));
+    
+program
+	.command('copyComp <project> <source> <target>')
+	.alias('cC')
+	.description('create a new copy of an existing component')
+	.action((project, source, target) => copyComp(project, source, target));
+
+program.parse(process.argv);

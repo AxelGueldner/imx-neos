@@ -1,0 +1,141 @@
+const ncp = require('ncp');
+const replace = require('replace-in-file');
+const fs = require('fs');
+
+ncp.limit = 16;
+
+const validTypes = { a : 'atoms', m : 'molecules', n : 'nucleus', o : 'organisms'};
+
+/**
+ * create a new component from the template
+ * @param target String name of the new component %compType%//%compName%
+ */
+const addComp = (project, target) => {
+  target = target.split('/');
+  
+  const type = target[0];
+  const name = target[1];
+  
+  if(validTypes[type]){
+    createCompFromTemplate(project, validTypes[type], name);
+  }else{
+    return console.error('no valid compType given');
+  }
+};
+
+/**
+ * create a copy of an existing component
+ * @param source String name of the existing component %compType%//%structure%/%compName%
+ * @param target String name of the new component %compType%//%structure%/%compName%
+ */
+const copyComp = (project, source, target) => {
+  source = source.split('/');
+  const sourceType = source[0];
+  const sourceName = source[1];
+  
+  target = target.split('/');
+  const targetType = target[0];
+  const targetName = target[1];
+  
+  if(validTypes[sourceType] && validTypes[targetType]){
+    createCompFromComp({
+      project : project,
+      type : validTypes[sourceType],
+      name : sourceName,
+      basePath : getBasePath(validTypes[sourceType], sourceName)
+    },{
+      project : project,
+      type : validTypes[targetType],
+      name : targetName,
+      basePath : getBasePath(validTypes[targetType], targetName)
+    });
+  }
+};
+
+/**
+ * create a copy of the template component
+ * @param project String the name of the project for usage in fusion file
+ * @param type String the component type (atom, molecule, nucleus, organism)
+ * @param name String name of the new component
+ */
+const createCompFromTemplate = (project, type, name) => {
+  const basePath = getBasePath(type, name);
+  
+  ncp(__dirname + '/template', basePath, function (err) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log('created new base component from template');
+    modifyTemplate(basePath, {project: project, type : type, name : name}, {project : '%%PROJECT%%', type : '%%TYPE%%', name : '%%NAME%%'});
+  });
+};
+
+/**
+ * create a copy of an existing component
+ * @param source Object collection of infos like name and type of the existing component
+ * @param target Object collection of infos like name and type of the new component
+ */
+const createCompFromComp = (source, target) => {
+  ncp(source.basePath, target.basePath, function (err) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log('created new ' + target.type + ' named ' + target.name + ' from ' + source.type + ' named ' + source.name);
+    modifyTemplate(target.basePath, target, source);
+  });
+};
+
+/**
+ * replace old component names in the files of the new component
+ * @param basePath String the path to the new component
+ * @param source Object collection of infos like name and type of the existing component
+ * @param target Object collection of infos like name and type of the new component
+ */
+const modifyTemplate = (basePath, target, source) => {
+
+  basePath += '/';
+  
+  target.name4css = target.name.replace('.', '-');
+  source.name4css = source.name.replace('.', '-');
+  
+  replace({
+    files: [basePath + capitalize(source.name) + '.fusion', basePath + 'assets/styles/**/*.less'],
+    from: [
+      new RegExp(source.name4css, 'g'),
+      new RegExp(capitalize(source.project), 'g'),
+      new RegExp(capitalize(source.type), 'g'),
+      new RegExp(capitalize(source.name), 'g'),
+      '%%YEAR%%'
+    ],
+    to: [
+      target.name4css,
+      capitalize(target.project),
+      capitalize(target.type),
+      capitalize(target.name),
+      new Date().getFullYear()
+    ]
+  })
+    .then(changes => {
+      console.log('updated classes and ids to ' + target.name4css);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+    
+  fs.renameSync(basePath + source.name + '.fusion', basePath + capitalize(target.name) + '.fusion');
+
+};
+
+const getBasePath = (project, type, name) => {
+  let basePath = './DistributionPackages/imx.' + project + '/Resources/Private/Fusion/Presentation/';
+  basePath += capitalize(type) + '/' + capitalize(name);
+  
+  return basePath;
+};
+
+const capitalize = (string) => {
+  if (typeof string !== 'string') return ''
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+module.exports = { addComp, copyComp };
